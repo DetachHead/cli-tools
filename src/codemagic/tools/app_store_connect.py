@@ -125,6 +125,18 @@ class AppStoreConnect(
         self._enable_jwt_cache = enable_jwt_cache
 
     @classmethod
+    def from_environment_variable_defaults(cls) -> AppStoreConnect:
+        def resolve_value(argument_properties: cli.ArgumentProperties):
+            argument = argument_properties.type.from_environment_variable_default()  # type: ignore
+            return argument.value
+
+        return AppStoreConnect(
+            key_identifier=resolve_value(AppStoreConnectArgument.KEY_IDENTIFIER),
+            issuer_id=resolve_value(AppStoreConnectArgument.ISSUER_ID),
+            private_key=resolve_value(AppStoreConnectArgument.PRIVATE_KEY),
+        )
+
+    @classmethod
     def from_cli_args(cls, cli_args: argparse.Namespace) -> AppStoreConnect:
         key_identifier_argument = AppStoreConnectArgument.KEY_IDENTIFIER.from_args(cli_args)
         issuer_id_argument = AppStoreConnectArgument.ISSUER_ID.from_args(cli_args)
