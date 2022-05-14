@@ -109,9 +109,10 @@ class Profiles(ResourceManager[Profile]):
         """
         https://developer.apple.com/documentation/appstoreconnectapi/read_the_bundle_id_in_a_profile
         """
-        if isinstance(profile, Profile):
+        url = None
+        if isinstance(profile, Profile) and profile.relationships is not None:
             url = profile.relationships.bundleId.links.related
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/profiles/{profile}/bundleId'
         response = self.client.session.get(url).json()
         return BundleId(response['data'])
@@ -120,49 +121,42 @@ class Profiles(ResourceManager[Profile]):
         """
         https://developer.apple.com/documentation/appstoreconnectapi/get_the_bundle_resource_id_in_a_profile
         """
-        if isinstance(profile, Profile):
+        url = None
+        if isinstance(profile, Profile) and profile.relationships is not None:
             url = profile.relationships.bundleId.links.self
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/profiles/{profile}/relationships/bundleId'
         response = self.client.session.get(url).json()
         return LinkedResourceData(response['data'])
 
-    def list_certificates(self, profile: Union[Profile, ResourceId]) -> List[SigningCertificate]:
+    def list_certificates(self, profile: ResourceId) -> List[SigningCertificate]:
         """
         https://developer.apple.com/documentation/appstoreconnectapi/list_all_certificates_in_a_profile
         """
-        if isinstance(profile, Profile):
-            url = profile.relationships.profiles.links.related
-        else:
-            url = f'{self.client.API_URL}/profiles/{profile}/certificates'
+        url = f'{self.client.API_URL}/profiles/{profile}/certificates'
         return [SigningCertificate(certificate) for certificate in self.client.paginate(url)]
 
     def list_certificate_ids(self, profile: Union[Profile, ResourceId]) -> List[LinkedResourceData]:
         """
         https://developer.apple.com/documentation/appstoreconnectapi/get_all_certificate_ids_in_a_profile
         """
-        if isinstance(profile, Profile):
+        url = None
+        if isinstance(profile, Profile) and profile.relationships is not None:
             url = profile.relationships.certificates.links.self
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/profiles/{profile}/relationships/certificates'
         return [LinkedResourceData(certificate) for certificate in self.client.paginate(url)]
 
-    def list_devices(self, profile: Union[Profile, ResourceId]) -> List[Device]:
+    def list_devices(self, profile: ResourceId) -> List[Device]:
         """
         https://developer.apple.com/documentation/appstoreconnectapi/list_all_devices_in_a_profile
         """
-        if isinstance(profile, Profile):
-            url = profile.relationships.profiles.links.related
-        else:
-            url = f'{self.client.API_URL}/profiles/{profile}/devices'
+        url = f'{self.client.API_URL}/profiles/{profile}/devices'
         return [Device(device) for device in self.client.paginate(url)]
 
-    def list_device_ids(self, profile: Union[Profile, ResourceId]) -> List[LinkedResourceData]:
+    def list_device_ids(self, profile: ResourceId) -> List[LinkedResourceData]:
         """
         https://developer.apple.com/documentation/appstoreconnectapi/get_all_device_resource_ids_in_a_profile
         """
-        if isinstance(profile, Profile):
-            url = profile.relationships.profiles.links.self
-        else:
-            url = f'{self.client.API_URL}/profiles/{profile}/relationships/devices'
+        url = f'{self.client.API_URL}/profiles/{profile}/relationships/devices'
         return [LinkedResourceData(device) for device in self.client.paginate(url)]

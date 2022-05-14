@@ -73,9 +73,9 @@ class Builds(ResourceManager[Build]):
         """
         https://developer.apple.com/documentation/appstoreconnectapi/read_the_app_information_of_a_build
         """
-        if isinstance(build, Build):
+        if isinstance(build, Build) and build.relationships is not None:
             url = build.relationships.app.links.related
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/builds/{build}/app'
         response = self.client.session.get(url).json()
         return App(response['data'])
@@ -84,9 +84,9 @@ class Builds(ResourceManager[Build]):
         """
         https://developer.apple.com/documentation/appstoreconnectapi/read_the_app_store_version_information_of_a_build
         """
-        if isinstance(build, Build):
+        if isinstance(build, Build) and build.relationships is not None:
             url = build.relationships.appStoreVersion.links.related
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/builds/{build}/appStoreVersion'
         response = self.client.session.get(url).json()
         if response['data'] is None:
@@ -97,9 +97,9 @@ class Builds(ResourceManager[Build]):
         """
         https://developer.apple.com/documentation/appstoreconnectapi/read_the_prerelease_version_of_a_build
         """
-        if isinstance(build, Build):
+        if isinstance(build, Build) and build.relationships is not None:
             url = build.relationships.preReleaseVersion.links.related
-        else:
+        if url is None:
             url = f'{self.client.API_URL}/builds/{build}/preReleaseVersion'
         response = self.client.session.get(url).json()
         if response['data'] is None:
